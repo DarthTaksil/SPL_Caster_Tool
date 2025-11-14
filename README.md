@@ -8,8 +8,8 @@ Click the Green `Code` dropdown and then `Download ZIP`.
 
 ### OBS SCENES
 This will switch between two scenes. And they must be named accordingly: (yes they are case sensitive)
-`LIVE FEED` - Scene for the live gameplay.
-`INTERMISSION` - Scene for intermission Stats.
+- `LIVE FEED` - Scene for the live gameplay.
+- `INTERMISSION` - Scene for intermission Stats.
 
 ### PYTHON DOWNLOAD
 You WILL need Python to run this.
