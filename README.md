@@ -1,6 +1,8 @@
 # SPL_Caster_Tool
 A tool for the Broadcasters of the Slapshot Premier League
 
+## Downloading
+Click the Green `Code` dropdown and then `Download ZIP`.
 
 ## SET UP / CONFIG
 
