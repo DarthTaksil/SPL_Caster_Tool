@@ -12,8 +12,9 @@ INTERMISSION_DELAY = 3  # seconds
 
 # Stats JSON files
 SLAPSHOT_LOGS_PATH = r"D:\\SteamLibrary\\steamapps\\common\\SlapshotRebound\\Slapshot_Data\\Matches"
-OUTPUT_PATH = os.path.join(os.getcwd(), "stats")
-SLEEP_INTERVAL_STATS = 5
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_PATH = os.path.join(BASE_PATH, "stats")
+SLEEP_INTERVAL_STATS = 2
 
 # OBS WebSocket settings
 OBS_HOST = "localhost"
