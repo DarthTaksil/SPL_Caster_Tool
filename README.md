@@ -6,11 +6,16 @@ Click the Green `Code` dropdown and then `Download ZIP`.
 
 ## SET UP / CONFIG
 
+### OBS SCENES
+This will switch between two scenes. And they must be named accordingly: (yes they are case sensitive)
+`LIVE FEED` - Scene for the live gameplay.
+`INTERMISSION` - Scene for intermission Stats.
+
+### PYTHON DOWNLOAD
 You WILL need Python to run this.
 Download it [here](https://www.python.org/downloads/release/python-31210/).  I use 3.12.10 but you may find success with other versions.
 
-To set this up, download the newest main.py package.
-
+### CONFIG
 Then Open main.py with Notepad and set your directories to the `broadcastinfo.txt` and `Matches` folder.
 
 To get to these files:
