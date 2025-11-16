@@ -49,6 +49,8 @@ def is_faceoff(x):
 
 def is_time_format(x):
     x = normalize(x)
+    if x.startswith("+"):
+        x = x[1:]  # Remove leading '+' when the match is in overtime.
     if ":" not in x:
         return False
     parts = x.split(":")
