@@ -21,6 +21,14 @@ OBS_HOST = "localhost"
 OBS_PORT = 4455
 OBS_PASSWORD = "your_password_here"
 
+# === REPLAY CONFIG ===
+# REPLAY settings
+REPEAT_THRESHOLD = 13  # number of consecutive same time reads to trigger replay
+REPLAY_COOLDOWN_SECONDS = 6
+
+# FACEOFF settings
+FACEOFF_COOLDOWN_SECONDS = 4
+
 # === OBS CONNECTION ===
 ws = None
 
@@ -56,6 +64,16 @@ def is_time_format(x):
     parts = x.split(":")
     return len(parts) == 2 and parts[0].isdigit() and parts[1].isdigit()
 
+def convert_to_seconds(t):
+    """Convert 4:51 into total seconds (291). Handles + prefixes."""
+    if not t or ":" not in t:
+        return None
+    t = t.lstrip("+")
+    parts = t.split(":")
+    if len(parts) != 2 or not parts[0].isdigit() or not parts[1].isdigit():
+        return None
+    return int(parts[0]) * 60 + int(parts[1])
+
 # === PERIOD WATCHER EVENTS ===
 def on_period_start():
     print("[EVENT] PERIOD START DETECTED — switching to LIVE scene")
@@ -73,8 +91,28 @@ def on_intermission_start():
         except Exception as e:
             print(f"OBS error: {e}")
 
+# === EVENTS ===
+def switch_scene(scene_name):
+    if ws:
+        try:
+            ws.call(requests.SetCurrentProgramScene(sceneName=scene_name))
+            print(f"[OBS] Switched to scene: {scene_name}")
+        except Exception as e:
+            print(f"OBS error: {e}")
+
+def on_replay_trigger():
+    print("[EVENT] REPLAY TRIGGERED")
+    switch_scene("REPLAY")
+
+def on_live_trigger():
+    print("[EVENT] LIVE TRIGGERED")
+    switch_scene("LIVE")
+
 # === PERIOD WATCHER LOOP ===
 prev_value = None
+repeat_count = 0
+last_replay_time = 0
+last_faceoff_time = 0
 
 def read_broadcast_value():
     try:
@@ -86,7 +124,7 @@ def read_broadcast_value():
     return None
 
 def watcher_loop():
-    global prev_value
+    global prev_value, repeat_count, last_replay_time, last_faceoff_time
     print("Slapshot Period Watcher Running...")
 
     while True:
@@ -94,17 +132,32 @@ def watcher_loop():
         current = normalize(current_raw)
         prev_norm = normalize(prev_value) if prev_value else None
 
-        print(f"DEBUG: prev='{prev_norm}'  current='{current}' raw='{current_raw}'")
-
         if current is None:
             time.sleep(POLL_INTERVAL_BROADCAST)
             continue
 
-        # Detect period start
-        if prev_norm == "-" and current == "FACEOFF":
-            on_period_start()
+        # === REPEAT TIME DETECTION ===
+        if is_time_format(current):
+            if current == prev_norm:
+                repeat_count += 1
+            else:
+                repeat_count = 1  # reset
+        else:
+            repeat_count = 0
 
-        # Detect intermission
+        now = time.time()
+
+        # Trigger REPLAY if threshold met and cooldown passed
+        if repeat_count == REPEAT_THRESHOLD and (now - last_replay_time) >= REPLAY_COOLDOWN_SECONDS:
+            on_replay_trigger()
+            last_replay_time = now
+
+        # === FACEOFF DETECTION ===
+        if is_faceoff(current) and (now - last_faceoff_time) >= FACEOFF_COOLDOWN_SECONDS:
+            on_live_trigger()
+            last_faceoff_time = now
+
+        # === INTERMISSION DETECTION ===
         if is_time_format(prev_norm) and is_dash(current):
             print("Intermission detected... delaying transition...")
             time.sleep(INTERMISSION_DELAY)

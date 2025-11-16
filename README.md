@@ -1,15 +1,36 @@
 # SPL_Caster_Tool
 A tool for the Broadcasters of the Slapshot Premier League
 
-## Downloading
+## Downloading / Installing
 Click the Green `Code` dropdown and then `Download ZIP`.
+
+After you get the files. Move `main.py` into it's own folder.  Double-click to run it. If you dont have Python installed, you can do so [here](https://www.python.org/downloads/release/python-31210/).
 
 ## SET UP / CONFIG
 
 ### OBS SCENES
-This will switch between two scenes. And they must be named accordingly: (yes they are case sensitive)
-- `LIVE FEED` - Scene for the live gameplay.
+This will switch between three scenes. And they must be named accordingly: (yes they are case sensitive)
+- `LIVE` - Scene for the live gameplay.
 - `INTERMISSION` - Scene for intermission Stats.
+- `REPLAY` - Scene for Goal Replays.
+
+#### Scene Cont.
+- `LIVE` should display the whole game capture with a scorebug.
+- `INTERMISSION` should display the current score ( `away_goals.txt` and `home_goals.txt` ), the `game-state.txt`, and Team Names associated with the graphic. What metrics you choose to display is up to your descretion. Every metric is made available in the `stats` folder.
+- `REPLAY` should only display the game capture (with the exception of a few watermarks in the upper right and upper left of the screen.)
+
+Transition Overrides are expected to be used. (I use `Time` as my `Transition Point Type`.)
+- `TRANSITION TO LIVE` should have a transitional point of 0ms
+- `TRANSITION TO REPLAY` should have a transitional point of 2800ms
+
+#### Making Transitions
+If your making a transition in Adobe Premiere Pro, when you export your video make sure there is Alpha compatibility. My personal export preference is:
+- Export Settings
+- - Format: `Quicktime`
+- Basic Video Settings
+- - Video Codec: `Animation`
+- - Depth: `8-bpc + alpha`
+This should export a `.mov` file.
 
 ### PYTHON DOWNLOAD
 You WILL need Python to run this.
